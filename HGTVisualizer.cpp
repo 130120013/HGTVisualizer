@@ -1,9 +1,8 @@
 #include "HGTVisualizer.h"
 #include "BMPGenerator/BMPGenerator.h"
 
-int16_t* readHGT(const char* name, std::size_t* fWidth)
+std::unique_ptr<std::int16_t[]> readHGT(const char* name, std::size_t* fWidth)
 {
-	int16_t* buffer;
 	FILE *hgtFile;
 	
  	if ((hgtFile = fopen(name, "rb")) == NULL)
@@ -13,8 +12,8 @@ int16_t* readHGT(const char* name, std::size_t* fWidth)
 	long lSize = ftell(hgtFile);
 	rewind(hgtFile);
 
-	buffer = new int16_t[lSize / 2];
-	*fWidth = std::sqrt(lSize / 2);
+	auto buffer = std::make_unique<std::int16_t[]>(lSize / 2);
+	*fWidth = std::size_t(std::sqrt(lSize / 2));
 
 	for (int i = 0; i < lSize / 2; ++i)
 	{

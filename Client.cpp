@@ -4,11 +4,10 @@
 int main()
 {
 	std::size_t fWidth;
-	int16_t* heights = readHGT("N40E127.hgt", &fWidth);
+	auto heights = readHGT("N40E127.hgt", &fWidth);
 	
-	if (heights == NULL)
+	if (!heights)
 		return -1;
 
-  	delete[] heights;
 	return 0;
 }
