@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 		return -2;
 	}
 
-	auto get_value = [fWidth, &heights](auto x, auto y) -> double {return double(heights[x + y * fWidth]);};
+	auto get_value = [fWidth, &heights](auto x, auto y) -> double {return double(heights[x + (fWidth - y - 1) * fWidth]);};
 
 	if (!generateBMP(argv[2], get_value, fWidth, fWidth, true))
 	{
