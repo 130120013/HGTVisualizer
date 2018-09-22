@@ -274,7 +274,7 @@ bool generateBMP(const char* name, const double val_min, const double val_max, c
 }
 
 template <class Callable>
-bool generateBMP(const char* name, const Callable&& GetValue, const std::int32_t fWidth, const std::int32_t fHeight, const bool fDiscardFileIfExists)
+bool generateBMP(const char* name, Callable&& GetValue, std::int32_t fWidth, std::int32_t fHeight, bool fDiscardFileIfExists)
 {
 	std::int32_t cbPadding;
 	FILE* fp = CreateBitmapFile(name, fWidth, fHeight, fDiscardFileIfExists, &cbPadding);
@@ -338,7 +338,7 @@ bool generateBMP(const char* name, const Callable&& GetValue, int16_t* data, con
 
 	updateHeights(data, data + arrSize);
 
-	auto minmaxVal = extreme2Task(data, data + arrSize, std::less<int16_t>());
+	auto minmaxVal = extreme2Task(data, data + arrSize);
 	if (minmaxVal.first == data + arrSize)
 		return false;
 
