@@ -7,12 +7,8 @@ int main()
 	int16_t* heights = readHGT("N40E127.hgt", &fWidth);
 	
 	if (heights == NULL)
-		return 0;
-
-	for (int i = 0; i < 5; i++)
-		std::cout << heights[i] << " ";
+		return -1;
 
   	delete[] heights;
- 	system("pause");
 	return 0;
 }

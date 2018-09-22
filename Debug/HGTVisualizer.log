@@ -1,3 +1,0 @@
-﻿  Client.cpp
-c:\users\alina.protopopova\documents\visual studio 2017\projects\hgtvisualizer\hgtvisualizer\hgtvisualizer.h(18): warning C4244: '=': conversion from 'double' to 'size_t', possible loss of data
-  HGTVisualizer.vcxproj -> C:\Users\Alina.Protopopova\Documents\Visual Studio 2017\Projects\HGTVisualizer\Debug\HGTVisualizer.exe
