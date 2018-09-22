@@ -1,4 +1,5 @@
 #include "BMPGenerator/BMPGenerator.h"
+#include "BMPGenerator/BMPGenerator.cpp"
 #ifndef HGT_VISUALIZER
 #define HGT_VISUALIZER
 
@@ -6,7 +7,7 @@ int16_t BigEndianToLittleEndian(uint16_t s)
 { 
 	return  (s << 8) | (s  >> 8);
 }
-int16_t* readHGT(const char* name, std::size_t* fWidth)
+int16_t* readHGT(const char* name, std::int32_t* fWidth)
 {
 	int16_t* buffer;
 	FILE *hgtFile;
@@ -19,7 +20,7 @@ int16_t* readHGT(const char* name, std::size_t* fWidth)
 	rewind(hgtFile);
 
 	buffer = new int16_t[lSize / 2];
-	*fWidth = lSize / 2;
+	*fWidth = std::sqrt(lSize / 2);
 
 	for (int i = 0; i < lSize / 2; ++i)
 	{
