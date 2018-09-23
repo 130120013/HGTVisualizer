@@ -1,3 +1,2 @@
-﻿  Client.cpp
-c:\users\alina.protopopova\documents\visual studio 2017\projects\hgtvisualizer\hgtvisualizer\hgtvisualizer.h(69): warning C4477: 'printf' : format string '%f' requires an argument of type 'double', but variadic argument 1 has type 'int32_t'
-  HGTVisualizer.vcxproj -> C:\Users\Alina.Protopopova\Documents\Visual Studio 2017\Projects\HGTVisualizer\x64\Debug\HGTVisualizer.exe
+﻿  HGTVisualizer.cpp
+  HGTVisualizer.vcxproj -> C:\Users\User\Desktop\temp\HGTVisualizer\x64\Debug\HGTVisualizer.exe

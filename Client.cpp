@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
 	auto get_value = [fWidth, &heights](auto x, auto y) -> double {return double(heights[x + (fWidth - y - 1) * fWidth]);};
 
-	if (!generateBMP(argv[2], get_value, fWidth, fWidth, true))
+	if (!generateBMP(argv[2], get_value, std::uint32_t(fWidth), std::uint32_t(fWidth), true))
 	{
 		std::cerr << "Coult write BMP data to " << argv[2] << "\n";
 		return -3;

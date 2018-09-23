@@ -186,7 +186,7 @@ std::pair<Iterator, Iterator> extreme2Task(Iterator arrBegin, Iterator arrEnd, c
 		futures.emplace_back(std::async(std::launch::async, [greater](Iterator i, Iterator iEnd, CompareLess compLess) -> std::pair<Iterator, Iterator>
 		{
 			std::pair<Iterator, Iterator> res = std::pair<Iterator, Iterator>(i, i);
-			for (auto it = i; it < iEnd; ++it)
+			for (auto it = std::next(i); it < iEnd; ++it)
 			{
 				if(compLess(*it, *res.first))
 					res.first = it;
@@ -208,7 +208,7 @@ std::pair<Iterator, Iterator> extreme2Task(Iterator arrBegin, Iterator arrEnd, c
 			it_extremum.first = it_val.first;
 
 		if(greater(*it_val.second, *it_extremum.second))
-					it_extremum.second = it_val.second;
+			it_extremum.second = it_val.second;
 	}
 	return it_extremum;
 }
@@ -225,26 +225,16 @@ auto extreme2Task(Iterator arrBegin, Iterator arrEnd)
 	return extreme2Task(arrBegin, arrEnd, std::less<typename std::iterator_traits<Iterator>::value_type>());
 }
 
-inline unsigned scaleBetween(const double unscaledNum, const double min, const double max) 
+inline unsigned scaleBetween(double unscaledNum, double min, double max) 
 {
 	return unsigned(MAX_COLORS * (unscaledNum - min) / (max - min)); //scale from [min; max) to [0; MAX_COLORS)
 }
 
-template <class Iterator>
-void updateHeights(Iterator begin, Iterator end)
-{
-	for (auto it = begin; it != end; ++it)
-	{
-		if (*it < -500)
-			*it = 0;
-	}
-}
-
 bool ValToRGB(const double nVal, const double nMin, const double nMax, RGBTRIPLE* colour); //converts a value to a RGB colour
-FILE* CreateBitmapFile(const char* name, const std::int32_t fWidth, const std::int32_t fHeight, const bool fDiscardFileIfExists, int32_t* cbPadding); //creates a file with BMP headers
+FILE* CreateBitmapFile(const char* name, std::int32_t fWidth, std::int32_t fHeight, bool fDiscardFileIfExists, int32_t* cbPadding); //creates a file with BMP headers
 
 template <class Callable>
-bool generateBMP(const char* name, const double val_min, const double val_max, const Callable&& GetValue, const std::int32_t fWidth, const std::int32_t fHeight, const bool fDiscardFileIfExists) 
+bool generateBMP(const char* name, double val_min, double val_max, Callable&& GetValue, std::int32_t fWidth, std::int32_t fHeight, bool fDiscardFileIfExists) 
 {
 	std::int32_t cbPadding; 
 	FILE* fp = CreateBitmapFile(name, fWidth, fHeight, fDiscardFileIfExists, &cbPadding);
@@ -274,7 +264,7 @@ bool generateBMP(const char* name, const double val_min, const double val_max, c
 }
 
 template <class Callable>
-bool generateBMP(const char* name, Callable&& GetValue, std::int32_t fWidth, std::int32_t fHeight, bool fDiscardFileIfExists)
+bool generateBMP(const char* name, Callable&& GetValue, std::uint32_t fWidth, std::uint32_t fHeight, bool fDiscardFileIfExists)
 {
 	std::int32_t cbPadding;
 	FILE* fp = CreateBitmapFile(name, fWidth, fHeight, fDiscardFileIfExists, &cbPadding);
@@ -283,26 +273,26 @@ bool generateBMP(const char* name, Callable&& GetValue, std::int32_t fWidth, std
 
 	static const std::uint32_t padding = 0;
 	auto arrSize = fWidth * fHeight;
-	double* heightmatrix = new double[arrSize];
+	auto heightmatrix = std::make_unique<double[]>(arrSize);
 
-	for (int l = 0; l < fHeight; ++l)
+	for (std::uint32_t l = 0; l < fHeight; ++l)
 	{
-		for (int k = 0; k < fWidth; ++k)
+		for (std::uint32_t k = 0; k < fWidth; ++k)
 		{
 			heightmatrix[l*fWidth + k] = GetValue(k, l);
 		}
 	}
 
-	auto minmaxVal = extreme2Task(heightmatrix, heightmatrix + arrSize, std::less<double>());
-	if (minmaxVal.first == heightmatrix + arrSize)
+	auto minmaxVal = extreme2Task(&heightmatrix[0], &heightmatrix[arrSize], std::less<double>());
+	if (minmaxVal.first == &heightmatrix[arrSize])
 		return false;
 
-	for (int l = 0; l < fHeight; ++l)
+	for (uint32_t l = 0; l < fHeight; ++l)
 	{
-		for (int k = 0; k < fWidth; ++k)
+		for (uint32_t k = 0; k < fWidth; ++k)
 		{
 			RGBTRIPLE rgb;
-			bool successCode = ValToRGB(GetValue(k, l), *minmaxVal.first, *minmaxVal.second, &rgb);
+			bool successCode = ValToRGB(heightmatrix[l*fWidth + k], *minmaxVal.first, *minmaxVal.second, &rgb);
 			if (successCode)
 			{
 				fwrite(&rgb.rgbBlue, 1, 1, fp);
@@ -316,48 +306,37 @@ bool generateBMP(const char* name, Callable&& GetValue, std::int32_t fWidth, std
 	return true;
 }
 
-template <class Callable>
-bool generateBMP(const char* name, const Callable&& GetValue, int16_t* data, const std::int32_t fWidth, const std::int32_t fHeight, const bool fDiscardFileIfExists)
-{
-	std::int32_t cbPadding;
-	FILE* fp = CreateBitmapFile(name, fWidth, fHeight, fDiscardFileIfExists, &cbPadding);
-	if (!fp)
-		return false;
-
-	static const std::uint32_t padding = 0;
-	auto arrSize = fWidth * fHeight;
-	//double* heightmatrix = new double[arrSize];
-
-	//for (int l = 0; l < fHeight; ++l)
-	//{
-	//	for (int k = 0; k < fWidth; ++k)
-	//	{
-	//		heightmatrix[l*fWidth + k] = GetValue(k, l);
-	//	}
-	//}
-
-	updateHeights(data, data + arrSize);
-
-	auto minmaxVal = extreme2Task(data, data + arrSize);
-	if (minmaxVal.first == data + arrSize)
-		return false;
-
-	for (int l = 0; l < fHeight; ++l)
-	{
-		for (int k = 0; k < fWidth; ++k)
-		{
-			RGBTRIPLE rgb;
-			bool successCode = ValToRGB(GetValue(k, l), *minmaxVal.first, *minmaxVal.second, &rgb);
-			if (successCode)
-			{
-				fwrite(&rgb.rgbBlue, 1, 1, fp);
-				fwrite(&rgb.rgbGreen, 1, 1, fp);
-				fwrite(&rgb.rgbRed, 1, 1, fp);
-			}
-		}
-		fwrite(&padding, 1, cbPadding, fp);
-	}
-	fclose(fp);
-	return true;
-}
+//template <class Callable>
+//bool generateBMP(const char* name, Callable&& GetValue, const int16_t* data, std::size_t fWidth, std::size_t fHeight, bool fDiscardFileIfExists)
+//{
+//	std::int32_t cbPadding;
+//	FILE* fp = CreateBitmapFile(name, fWidth, fHeight, fDiscardFileIfExists, &cbPadding);
+//	if (!fp)
+//		return false;
+//
+//	static const std::uint32_t padding = 0;
+//	auto arrSize = fWidth * fHeight;
+//
+//	auto minmaxVal = extreme2Task(data, data + arrSize);
+//	if (minmaxVal.first == data + arrSize)
+//		return false;
+//
+//	for (int l = 0; l < fHeight; ++l)
+//	{
+//		for (int k = 0; k < fWidth; ++k)
+//		{
+//			RGBTRIPLE rgb;
+//			bool successCode = ValToRGB(GetValue(k, l), *minmaxVal.first, *minmaxVal.second, &rgb);
+//			if (successCode)
+//			{
+//				fwrite(&rgb.rgbBlue, 1, 1, fp);
+//				fwrite(&rgb.rgbGreen, 1, 1, fp);
+//				fwrite(&rgb.rgbRed, 1, 1, fp);
+//			}
+//		}
+//		fwrite(&padding, 1, cbPadding, fp);
+//	}
+//	fclose(fp);
+//	return true;
+//}
 #endif

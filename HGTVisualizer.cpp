@@ -1,5 +1,20 @@
 #include "HGTVisualizer.h"
 
+constexpr std::int16_t BigEndianToLittleEndian(std::uint16_t s)
+{ 
+	return  (s << 8) | (s  >> 8);
+}
+
+template <class Iterator>
+void updateHeights(Iterator begin, Iterator end)
+{
+	for (auto it = begin; it != end; ++it)
+	{
+		if (*it < -500)
+			*it = 0;
+	}
+}
+
 std::unique_ptr<std::int16_t[]> readHGT(const char* name, std::size_t* fWidth)
 {
 	FILE *hgtFile;
@@ -21,6 +36,8 @@ std::unique_ptr<std::int16_t[]> readHGT(const char* name, std::size_t* fWidth)
 			return NULL;
 		buffer[i] = BigEndianToLittleEndian((uint16_t)buffer[i]);
 	}
+
+	updateHeights(&buffer[0], &buffer[*fWidth * *fWidth]);
 
 	fclose(hgtFile);
 	return buffer;

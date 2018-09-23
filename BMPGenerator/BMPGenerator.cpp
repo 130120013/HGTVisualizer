@@ -91,7 +91,7 @@ bool ValToRGB(const double nVal, const double nMin, const double nMax, RGBTRIPLE
 	}
 }
 
-FILE* CreateBitmapFile(const char* name, const std::int32_t fWidth, const std::int32_t fHeight, const bool fDiscardFileIfExists, int32_t* cbPadding)
+FILE* CreateBitmapFile(const char* name, std::int32_t fWidth, std::int32_t fHeight, bool fDiscardFileIfExists, int32_t* cbPadding)
 {
 	FILE *fp;
 	if (fp = fopen(name, "r"))
