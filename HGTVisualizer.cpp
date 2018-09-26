@@ -29,13 +29,10 @@ std::unique_ptr<std::int16_t[]> readHGT(const char* name, std::size_t* fWidth)
 	auto buffer = std::make_unique<std::int16_t[]>(lSize / 2);
 	*fWidth = std::size_t(std::sqrt(lSize / 2));
 
+	size_t res = fread(buffer.get(), 1, lSize, hgtFile);if (!res)
+	return NULL;
 	for (int i = 0; i < lSize / 2; ++i)
-	{
-		size_t res = fread(&buffer[i], 2, 1, hgtFile);
-		if (!res)
-			return NULL;
 		buffer[i] = BigEndianToLittleEndian((uint16_t)buffer[i]);
-	}
 
 	updateHeights(&buffer[0], &buffer[*fWidth * *fWidth]);
 
