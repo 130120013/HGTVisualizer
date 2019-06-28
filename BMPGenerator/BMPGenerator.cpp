@@ -118,7 +118,7 @@ unique_bmp_file_handle CreateBitmapFile(const char* name, std::uint32_t fWidth, 
 		return unique_bmp_file_handle();
 
 	std::uint8_t bfType[2] = { 'B','M' };
-	if (std::fwrite(&bfType[0], BYTESIZE, 2, fp.get()) < 2 * BYTESIZE)
+	if (std::fwrite(&bfType[0], BYTESIZE, 2, fp.get()) < 2)
 		return unique_bmp_file_handle();
 	const std::uint32_t cbHeader = 54;
 
@@ -126,59 +126,60 @@ unique_bmp_file_handle CreateBitmapFile(const char* name, std::uint32_t fWidth, 
 
 	auto cbPaddedWidth = fWidth * 3 + *cbPadding;
 	std::uint32_t bfSize = cbHeader + cbPaddedWidth * fHeight;
-	if(std::fwrite(&bfSize, DWORDSIZE, 1, fp.get()) < DWORDSIZE)
+	if(std::fwrite(&bfSize, DWORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	// bfReserved1 + bfReserved2
 	std::uint32_t reserved = 0;
-	if(std::fwrite(&reserved, DWORDSIZE, 1, fp.get()) < DWORDSIZE)
+	if(std::fwrite(&reserved, DWORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t bfOffBits = cbHeader;
-	if(std::fwrite(&bfOffBits, DWORDSIZE, 1, fp.get()) < DWORDSIZE)
+	if(std::fwrite(&bfOffBits, DWORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t biSize = 40;
-	if(std::fwrite(&biSize, DWORDSIZE, 1, fp.get()) < DWORDSIZE)
+	if(std::fwrite(&biSize, DWORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t biWidth = fWidth;
-	if(std::fwrite(&biWidth, LONGSIZE, 1, fp.get()) < LONGSIZE)
+	if(std::fwrite(&biWidth, LONGSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t biHeight = (std::uint32_t) -(std::int32_t) fHeight;
+	if(std::fwrite(&biHeight, LONGSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint16_t biPlanes = 1;
-	if(std::fwrite(&biPlanes, WORDSIZE, 1, fp.get()) < WORDSIZE)
+	if(std::fwrite(&biPlanes, WORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint16_t biBitCount = 24;
-	if(std::fwrite(&biBitCount, WORDSIZE, 1, fp.get()) < WORDSIZE)
+	if(std::fwrite(&biBitCount, WORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t biCompression = 0; //without compression
-	if(std::fwrite(&biCompression, DWORDSIZE, 1, fp.get()) < DWORDSIZE)
+	if(std::fwrite(&biCompression, DWORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t biSizeImage = 0;
-	if(std::fwrite(&biSizeImage, DWORDSIZE, 1, fp.get()) < DWORDSIZE)
+	if(std::fwrite(&biSizeImage, DWORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t biXPelsPerMeter = 0;
-	if(std::fwrite(&biXPelsPerMeter, LONGSIZE, 1, fp.get()) < LONGSIZE)
+	if(std::fwrite(&biXPelsPerMeter, LONGSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t biYPelsPerMeter = 0;
-	if(std::fwrite(&biYPelsPerMeter, LONGSIZE, 1, fp.get()) < LONGSIZE)
+	if(std::fwrite(&biYPelsPerMeter, LONGSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t biClrUsed = 0;
-	if(std::fwrite(&biClrUsed, DWORDSIZE, 1, fp.get()) < DWORDSIZE)
+	if(std::fwrite(&biClrUsed, DWORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	std::uint32_t biClrImportant = 0;
-	if(std::fwrite(&biClrImportant, DWORDSIZE, 1, fp.get()) < DWORDSIZE)
+	if(std::fwrite(&biClrImportant, DWORDSIZE, 1, fp.get()) != 1)
 		return unique_bmp_file_handle();
 
 	return fp;

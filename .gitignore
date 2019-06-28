@@ -33,8 +33,15 @@
 
 Debug/
 Release/
+x64/
 .vs/
 
-.hgt
-.bmp
+*.hgt
+*.bmp
 
+*.log
+*.tlog
+*.lastbuildstate
+
+*.idb
+*.pdb
